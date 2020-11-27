@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.saywut.flutter_foreground_service_plugin">
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <application>
+        <receiver
+            android:name=".RestartForegroundService"
+            android:enabled="true"
+            android:exported="true"></receiver>
+
+        <service
+            android:name=".FlutterForegroundService"
+            android:enabled="true"
+            android:exported="true"
+            tools:node="replace" />
+    </application>
+
+</manifest>

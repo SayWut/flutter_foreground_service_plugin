@@ -1,6 +1,5 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_foreground_service_plugin/flutter_foreground_service_plugin.dart';
 
 void main() {
   const MethodChannel channel = MethodChannel('flutter_foreground_service_plugin');

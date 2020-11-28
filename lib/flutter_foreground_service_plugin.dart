@@ -15,22 +15,28 @@ import 'content/notification_channel/notification_channel_importance.dart';
 import 'content/notification_channel/notification_channel_lockscreen_visibility.dart';
 
 class FlutterForegroundServicePlugin {
-  static const String _foregroundChannelName = 'com.saywut.flutter_foreground_service_plugin/foreground_channel';
-  static const String _backgroundChannelName = 'com.saywut.flutter_foreground_service_plugin/background_channel';
+  static const String _foregroundChannelName =
+      'com.saywut.flutter_foreground_service_plugin/foreground_channel';
+  static const String _backgroundChannelName =
+      'com.saywut.flutter_foreground_service_plugin/background_channel';
 
-  static const MethodChannel _foreground_channel = MethodChannel(_foregroundChannelName);
-  static const MethodChannel _background_channel = MethodChannel(_backgroundChannelName);
+  static const MethodChannel _foreground_channel =
+      MethodChannel(_foregroundChannelName);
+  static const MethodChannel _background_channel =
+      MethodChannel(_backgroundChannelName);
 
   // foreground channel commands
   static const String _startService = "startForegroundService";
   static const String _stopService = "stopForegroundService";
-  static const String _refreshForegroundServiceNotificationContent = "refreshForegroundServiceNotificationContent";
+  static const String _refreshForegroundServiceNotificationContent =
+      "refreshForegroundServiceNotificationContent";
   static const String _isServiceRunning = "isForegroundServiceRunning";
   static const String _startPeriodicTask = "startPeriodicTask";
   static const String _stopPeriodicTask = "stopPeriodicTask";
 
   // background channel commands
-  static const String _backgroundChannelInitialize = "backgroundChannelInitialize";
+  static const String _backgroundChannelInitialize =
+      "backgroundChannelInitialize";
 
   /// Starts the foreground service with the passed [notificationContent] and [notificationChannelContent].
   ///
@@ -48,7 +54,9 @@ class FlutterForegroundServicePlugin {
     assert(notificationChannelContent != null);
 
     int notifColorValue = notificationContent.color != null
-        ? notificationContent.color.red << 16 | notificationContent.color.green << 8 | notificationContent.color.blue
+        ? notificationContent.color.red << 16 |
+            notificationContent.color.green << 8 |
+            notificationContent.color.blue
         : null;
 
     Map<String, dynamic> args = {
@@ -63,7 +71,8 @@ class FlutterForegroundServicePlugin {
       'channelNameText': notificationChannelContent.nameText,
       'channelDescriptionText': notificationChannelContent.descriptionText,
       'channelImportance': notificationChannelContent.importance.importance,
-      'channelLockscreenVisibility': notificationChannelContent.lockscreenVisibility.visibility,
+      'channelLockscreenVisibility':
+          notificationChannelContent.lockscreenVisibility.visibility,
     };
 
     await _foreground_channel.invokeMethod(_startService, args);
@@ -81,7 +90,9 @@ class FlutterForegroundServicePlugin {
     assert(notificationContent != null);
 
     int notifColorValue = notificationContent.color != null
-        ? notificationContent.color.red << 16 | notificationContent.color.green << 8 | notificationContent.color.blue
+        ? notificationContent.color.red << 16 |
+            notificationContent.color.green << 8 |
+            notificationContent.color.blue
         : null;
 
     Map<String, dynamic> args = {
@@ -94,7 +105,8 @@ class FlutterForegroundServicePlugin {
       'notifEnableVibration': notificationContent.enableVibration,
     };
 
-    await _foreground_channel.invokeMethod(_refreshForegroundServiceNotificationContent, args);
+    await _foreground_channel.invokeMethod(
+        _refreshForegroundServiceNotificationContent, args);
   }
 
   /// Checks wether the service is running or not
@@ -137,7 +149,8 @@ class FlutterForegroundServicePlugin {
     assert(period.inMilliseconds > 0);
     assert(periodicTaskFun != null);
 
-    var rawTaskHandler = PluginUtilities.getCallbackHandle(periodicTaskFun).toRawHandle();
+    var rawTaskHandler =
+        PluginUtilities.getCallbackHandle(periodicTaskFun).toRawHandle();
 
     Map<String, dynamic> args = {
       'taskDelay': delay.inMilliseconds,

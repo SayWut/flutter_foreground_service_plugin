@@ -153,10 +153,6 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
 
         NotificationCompat.Builder notifBuild = new NotificationCompat.Builder(this, channelID)
                 .setContentTitle(notifTitleText)
-                .setContentText(notifBodyText)
-                .setSubText(notifSubText)
-                .setStyle(new NotificationCompat.BigTextStyle()
-                        .bigText(notifBodyText))
                 .setSmallIcon(notifIconID)
                 .setContentIntent(mainActivityIntent)
                 .setCategory(Notification.CATEGORY_SERVICE)
@@ -164,10 +160,17 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
 
         if (!notifEnableSound)
             notifBuild.setSound(null);
-        if (!notifEnableVibration) ;
-        notifBuild.setVibrate(null);
+        if (!notifEnableVibration)
+            notifBuild.setVibrate(null);
         if (notifColor != -1)
             notifBuild.setColor(notifColor);
+        if (notifSubText != null)
+            notifBuild.setSubText(notifSubText);
+        if (notifBodyText != null)
+        {
+            notifBuild.setContentText(notifBodyText);
+            notifBuild.setStyle(new NotificationCompat.BigTextStyle().bigText(notifBodyText));
+        }
 
         return notifBuild.build();
     }
@@ -218,7 +221,7 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
      * specified delay. Subsequent executions take place at approximately regular intervals
      * separated by the specified period.
      *
-     * @param delay sets the delay to wait before starting the task first time
+     * @param delay  sets the delay to wait before starting the task first time
      * @param period the period between each execute
      */
     public void startPeriodicTask(long delay, long period)

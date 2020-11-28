@@ -2,7 +2,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  const MethodChannel channel = MethodChannel('flutter_foreground_service_plugin');
+  const MethodChannel channel =
+      MethodChannel('flutter_foreground_service_plugin');
 
   TestWidgetsFlutterBinding.ensureInitialized();
 

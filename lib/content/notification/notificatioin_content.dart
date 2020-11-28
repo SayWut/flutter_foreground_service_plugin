@@ -32,13 +32,13 @@ class NotificationContent {
   NotificationContent({
     @required this.titleText,
     @required this.iconName,
-    this.bodyText = "",
-    this.subText = "",
+    this.bodyText,
+    this.subText,
     this.enableSound = false,
     this.enableVibration = false,
     this.color,
   }) {
     assert(titleText != null);
-    assert(bodyText != null);
+    assert(iconName != null);
   }
 }

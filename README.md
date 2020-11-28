@@ -1,17 +1,13 @@
 # flutter_foreground_service_plugin
 
-<h2>What is this plugin?</h2>
-
-----
+## What is this plugin?
 
 This plugin lets you create a foreground service in Android.
 
 __Caution:__<br>
 I have no idea what will happen if you try to run this plugin on IOS
 
-<h2>What can you control?</h2>
-
-------
+## What can you control?
 
 1. Set the notification content:
     - title

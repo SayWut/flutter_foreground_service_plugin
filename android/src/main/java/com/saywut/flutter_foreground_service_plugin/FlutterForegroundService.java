@@ -55,7 +55,8 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
         if (intent != null)
         {
             action = intent.getAction();
-            saveBundle.putAll(intent.getExtras());
+            if (intent.getExtras() != null)
+                saveBundle.putAll(intent.getExtras());
         }
 
         switch (action)
@@ -70,6 +71,7 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
 
                 if (saveBundle.getBoolean("isTaskRunning"))
                     setFlutterEngine();
+
 
                 return START_STICKY;
             case STOP_SERVICE:

@@ -153,7 +153,7 @@ public class FlutterForegroundServiceChannelHandler implements MethodChannel.Met
 
                 Intent startTaskIntent = new Intent(context, FlutterForegroundService.class);
                 startTaskIntent.setAction(FlutterForegroundService.START_TASK);
-                startTaskIntent.putExtra("isTaskRunning", false);
+                startTaskIntent.putExtra("isTaskRunning", true);
                 startTaskIntent.putExtra("taskDelay", delay);
                 startTaskIntent.putExtra("taskPeriod", period);
                 startTaskIntent.putExtra("rawTaskHandler", rawTaskHandler);
@@ -171,6 +171,7 @@ public class FlutterForegroundServiceChannelHandler implements MethodChannel.Met
 
                 Intent stopTaskIntent = new Intent(context, FlutterForegroundService.class);
                 stopTaskIntent.setAction(FlutterForegroundService.STOP_TASK);
+                stopTaskIntent.putExtra("isTaskRunning", false);
 
                 context.startService(stopTaskIntent);
 

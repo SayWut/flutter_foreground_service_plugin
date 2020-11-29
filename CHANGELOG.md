@@ -1,3 +1,9 @@
+## 0.1.3 (29.11.2020)
+
+### BUG FIX (ya I am stupid)
+* Fixed service crush on restart after the OS kills it
+* Fixed service restart task after service got killed by the OS
+
 ## 0.1.2 (29.11.2020)
 
 ### BUG FIX

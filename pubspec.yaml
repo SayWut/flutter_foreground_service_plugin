@@ -1,6 +1,6 @@
 name: flutter_foreground_service_plugin
 description: A flutter plugin to create a foreground service with a periodic task in android
-version: 0.1.1
+version: 0.1.2
 homepage: https://github.com/SayWut/flutter_foreground_service_plugin
 
 environment:

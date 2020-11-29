@@ -40,8 +40,8 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
     public static final String START_TASK = "START_FOREGROUND_TASK";
     public static final String STOP_TASK = "STOP_FOREGROUND_TASK";
 
-    private String action;
-    private Bundle saveBundle;
+    private String action = START_SERVICE;
+    private Bundle saveBundle = new Bundle();
     private Timer timer;
     private FlutterEngine engine;
     private MethodChannel androidToFlutterChannel;
@@ -53,13 +53,15 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
         super.onStartCommand(intent, flags, startId);
 
         if (intent != null)
+        {
             action = intent.getAction();
+            saveBundle.putAll(intent.getExtras());
+        }
 
         switch (action)
         {
             case START_SERVICE:
                 mainActivityIntent = getLaunchPendingIntent();
-                saveBundle = intent.getExtras();
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                     startForegroundOreo();
@@ -77,17 +79,14 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
 
                 return START_NOT_STICKY;
             case REFRESH_CONTENT:
-                saveBundle.putAll(intent.getExtras());
                 startForeground(1, buildNotification());
 
                 return START_STICKY;
             case START_TASK:
-                saveBundle.putAll(intent.getExtras());
                 setFlutterEngine();
 
                 return START_STICKY;
             case STOP_TASK:
-                saveBundle.putBoolean("isTaskRunning", false);
                 stopPeriodicTask();
 
                 return START_STICKY;

@@ -1,6 +1,11 @@
+## 0.1.2 (29.11.2020)
+
+### BUG FIX
+* Fixed service crush on restart after the OS kills it
+
 ## 0.1.1 (29.11.2020)
 
-### BUGS FIX
+### BUG FIX
 * Fixed `NotifiacationContant`'s `bodyText` prop, now it is not required it is optional
 * Fixed `NotifiacationContant`'s `enableVibration` prop, (a semicolon sliped in LOL)
 * Fixed `NotifiacationContant`'s `subText` and `bodyText` props, now if it is not set (`null`) then nothing is shown

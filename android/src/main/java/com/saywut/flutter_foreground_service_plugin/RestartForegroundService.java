@@ -18,8 +18,6 @@ public class RestartForegroundService extends BroadcastReceiver
     @Override
     public void onReceive(Context context, Intent intent)
     {
-        Log.i("onReceive", intent.getExtras().toString());
-
         Intent startServiceIntent = new Intent(context, FlutterForegroundService.class);
         startServiceIntent.setAction(FlutterForegroundService.START_SERVICE);
         startServiceIntent.putExtras(intent);

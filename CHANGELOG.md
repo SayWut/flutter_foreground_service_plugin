@@ -1,3 +1,9 @@
+## 0.1.4 (29.11.2020)
+
+### BUG FIX
+* Fixed service crush on auto restart when the OS kills the service
+* The service will run for longer period before the OS kills it
+
 ## 0.1.3 (29.11.2020)
 
 ### BUG FIX (ya I am stupid)

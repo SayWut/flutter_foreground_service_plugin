@@ -8,7 +8,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -41,8 +40,8 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
     public static final String STOP_TASK = "STOP_FOREGROUND_TASK";
 
     private String action = START_SERVICE;
-    private Bundle saveBundle = new Bundle();
-    private Timer timer;
+    private SharedPreferencesHandler preferencesHandler;
+    private Timer taskTimer;
     private FlutterEngine engine;
     private MethodChannel androidToFlutterChannel;
     private PendingIntent mainActivityIntent;
@@ -52,12 +51,11 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
     {
         super.onStartCommand(intent, flags, startId);
 
+        preferencesHandler = new SharedPreferencesHandler(getApplicationContext());
+
         if (intent != null)
-        {
             action = intent.getAction();
-            if (intent.getExtras() != null)
-                saveBundle.putAll(intent.getExtras());
-        }
+
 
         switch (action)
         {
@@ -69,9 +67,8 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
                 else
                     startForeground(1, buildNotification());
 
-                if (saveBundle.getBoolean("isTaskRunning"))
+                if ((boolean) preferencesHandler.get("isTaskRunning"))
                     setFlutterEngine();
-
 
                 return START_STICKY;
             case STOP_SERVICE:
@@ -104,13 +101,13 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
     public void startForegroundOreo()
     {
         // gets the notification channel params
-        final boolean notifEnableSound = saveBundle.getBoolean("notifEnableSound", false);
-        final boolean notifEnableVibration = saveBundle.getBoolean("notifEnableVibration", false);
-        final String channelID = saveBundle.getString("channelID");
-        final String channelNameText = saveBundle.getString("channelNameText");
-        final String channelDescriptionText = saveBundle.getString("channelDescriptionText");
-        final int channelImportance = saveBundle.getInt("channelImportance", NotificationManager.IMPORTANCE_DEFAULT);
-        final int channelLockscreenVisibility = saveBundle.getInt("channelLockscreenVisibility", Notification.VISIBILITY_SECRET);
+        final boolean notifEnableSound = (boolean) preferencesHandler.get("notifEnableSound");
+        final boolean notifEnableVibration = (boolean) preferencesHandler.get("notifEnableVibration");
+        final String channelID = (String) preferencesHandler.get("channelID");
+        final String channelNameText = (String) preferencesHandler.get("channelNameText");
+        final String channelDescriptionText = (String) preferencesHandler.get("channelDescriptionText");
+        final int channelImportance = (int) preferencesHandler.get("channelImportance");
+        final int channelLockscreenVisibility = (int) preferencesHandler.get("channelLockscreenVisibility");
 
         // creates a notification channel
         NotificationChannel notifChannel = new NotificationChannel(channelID, channelNameText, channelImportance);
@@ -143,14 +140,15 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
      */
     public Notification buildNotification()
     {
-        final String notifTitleText = saveBundle.getString("notifTitleText");
-        final String notifBodyText = saveBundle.getString("notifBodyText");
-        final String notifSubText = saveBundle.getString("notifSubText");
-        final int notifIconID = saveBundle.getInt("notifIconID", 0);
-        final int notifColor = saveBundle.getInt("notifColor", -1);
-        final boolean notifEnableSound = saveBundle.getBoolean("notifEnableSound", false);
-        final boolean notifEnableVibration = saveBundle.getBoolean("notifEnableVibration", false);
-        final String channelID = saveBundle.getString("channelID");
+        // gets the notification params
+        final String notifTitleText = (String) preferencesHandler.get("notifTitleText");
+        final String notifBodyText = (String) preferencesHandler.get("notifBodyText");
+        final String notifSubText = (String) preferencesHandler.get("notifSubText");
+        final int notifIconID = (int) preferencesHandler.get("notifIconID");
+        final int notifColor = (int) preferencesHandler.get("notifColor");
+        final boolean notifEnableSound = (boolean) preferencesHandler.get("notifEnableSound");
+        final boolean notifEnableVibration = (boolean) preferencesHandler.get("notifEnableVibration");
+        final String channelID = (String) preferencesHandler.get("channelID");
 
         NotificationCompat.Builder notifBuild = new NotificationCompat.Builder(this, channelID)
                 .setContentTitle(notifTitleText)
@@ -205,7 +203,7 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
         engine = new FlutterEngine(this);
         FlutterMain.ensureInitializationComplete(this, null);
 
-        long rawTaskHandler = saveBundle.getLong("rawTaskHandler");
+        long rawTaskHandler = (long) preferencesHandler.get("rawTaskHandler");
         FlutterCallbackInformation callbackInfo = FlutterCallbackInformation.lookupCallbackInformation(rawTaskHandler);
         String dartBundlePath = FlutterMain.findAppBundlePath();
 
@@ -227,12 +225,12 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
      */
     public void startPeriodicTask(long delay, long period)
     {
-        if (timer == null)
+        if (taskTimer == null)
         {
             final Handler handler = new Handler(Looper.getMainLooper());
 
-            timer = new Timer();
-            timer.schedule(new TimerTask()
+            taskTimer = new Timer();
+            taskTimer.schedule(new TimerTask()
             {
                 @Override
                 public void run()
@@ -255,11 +253,11 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
      */
     public void stopPeriodicTask()
     {
-        if (timer != null)
+        if (taskTimer != null)
         {
-            timer.cancel();
-            timer.purge();
-            timer = null;
+            taskTimer.cancel();
+            taskTimer.purge();
+            taskTimer = null;
         }
     }
 
@@ -268,17 +266,16 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
     {
         super.onDestroy();
 
-        stopPeriodicTask();
-
         // this is to check if the service got stopped by the system
         // if it is then restart it
         // you can read farther explanation in the RestartForegroundService class
         if (!action.equals(STOP_SERVICE))
         {
             Intent restartForegroundServiceReceiver = new Intent(this, RestartForegroundService.class);
-            restartForegroundServiceReceiver.putExtras(saveBundle);
             sendBroadcast(restartForegroundServiceReceiver);
         }
+
+        stopPeriodicTask();
     }
 
     @Override
@@ -287,8 +284,8 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
         switch (call.method)
         {
             case BACKGROUND_CHANNEL_INITIALIZE:
-                long taskDelay = saveBundle.getLong("taskDelay");
-                long taskPeriod = saveBundle.getLong("taskPeriod");
+                long taskDelay = (long) preferencesHandler.get("taskDelay");
+                long taskPeriod = (long) preferencesHandler.get("taskPeriod");
 
                 startPeriodicTask(taskDelay, taskPeriod);
                 result.success(true);

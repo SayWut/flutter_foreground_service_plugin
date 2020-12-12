@@ -29,6 +29,9 @@ public class FlutterForegroundServiceChannelHandler implements MethodChannel.Met
     @Override
     public void onMethodCall(@NonNull MethodCall call, @NonNull MethodChannel.Result result)
     {
+        SharedPreferencesHandler preferencesHandler = new SharedPreferencesHandler(context);
+        Intent serviceAction = new Intent(context, FlutterForegroundService.class);
+
         switch (call.method)
         {
             case START_FOREGROUND_SERVICE:
@@ -58,26 +61,27 @@ public class FlutterForegroundServiceChannelHandler implements MethodChannel.Met
                     break;
                 }
 
-                Intent startServiceIntent = new Intent(context, FlutterForegroundService.class);
-                startServiceIntent.setAction(FlutterForegroundService.START_SERVICE);
-                startServiceIntent.putExtra("notifTitleText", notifTitleText);
-                startServiceIntent.putExtra("notifBodyText", notifBodyText);
-                startServiceIntent.putExtra("notifSubText", notifSubText);
-                startServiceIntent.putExtra("notifIconID", notifIconID);
-                startServiceIntent.putExtra("notifColor", notifColor);
-                startServiceIntent.putExtra("notifEnableSound", notifEnableSound);
-                startServiceIntent.putExtra("notifEnableVibration", notifEnableVibration);
-                startServiceIntent.putExtra("channelID", channelID);
-                startServiceIntent.putExtra("channelNameText", channelNameText);
-                startServiceIntent.putExtra("channelDescriptionText", channelDescriptionText);
-                startServiceIntent.putExtra("channelImportance", channelImportance);
-                startServiceIntent.putExtra("channelLockscreenVisibility", channelLockscreenVisibility);
-                startServiceIntent.putExtra("isTaskRunning", false);
+                serviceAction.setAction(FlutterForegroundService.START_SERVICE);
+
+                preferencesHandler.put("notifTitleText", notifTitleText);
+                preferencesHandler.put("notifBodyText", notifBodyText);
+                preferencesHandler.put("notifSubText", notifSubText);
+                preferencesHandler.put("notifIconID", notifIconID);
+                preferencesHandler.put("notifColor", notifColor);
+                preferencesHandler.put("notifEnableSound", notifEnableSound);
+                preferencesHandler.put("notifEnableVibration", notifEnableVibration);
+                preferencesHandler.put("channelID", channelID);
+                preferencesHandler.put("channelNameText", channelNameText);
+                preferencesHandler.put("channelDescriptionText", channelDescriptionText);
+                preferencesHandler.put("channelImportance", channelImportance);
+                preferencesHandler.put("channelLockscreenVisibility", channelLockscreenVisibility);
+                preferencesHandler.put("isTaskRunning", false);
+                preferencesHandler.apply();
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                    context.startForegroundService(startServiceIntent);
+                    context.startForegroundService(serviceAction);
                 else
-                    context.startService(startServiceIntent);
+                    context.startService(serviceAction);
 
                 result.success(true);
                 break;
@@ -88,13 +92,12 @@ public class FlutterForegroundServiceChannelHandler implements MethodChannel.Met
                     break;
                 }
 
-                Intent stopServiceIntent = new Intent(context, FlutterForegroundService.class);
-                stopServiceIntent.setAction(FlutterForegroundService.STOP_SERVICE);
+                serviceAction.setAction(FlutterForegroundService.STOP_SERVICE);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                    context.startForegroundService(stopServiceIntent);
+                    context.startForegroundService(serviceAction);
                 else
-                    context.startService(stopServiceIntent);
+                    context.startService(serviceAction);
 
                 result.success(true);
                 break;
@@ -120,20 +123,20 @@ public class FlutterForegroundServiceChannelHandler implements MethodChannel.Met
                     break;
                 }
 
-                Intent refreshForegroundServiceNotifContent = new Intent(context, FlutterForegroundService.class);
-                refreshForegroundServiceNotifContent.setAction(FlutterForegroundService.REFRESH_CONTENT);
-                refreshForegroundServiceNotifContent.putExtra("notifTitleText", notifTitleText);
-                refreshForegroundServiceNotifContent.putExtra("notifBodyText", notifBodyText);
-                refreshForegroundServiceNotifContent.putExtra("notifSubText", notifSubText);
-                refreshForegroundServiceNotifContent.putExtra("notifIconID", notifIconID);
-                refreshForegroundServiceNotifContent.putExtra("notifColor", notifColor);
-                refreshForegroundServiceNotifContent.putExtra("notifEnableSound", notifEnableSound);
-                refreshForegroundServiceNotifContent.putExtra("notifEnableVibration", notifEnableVibration);
+                serviceAction.setAction(FlutterForegroundService.REFRESH_CONTENT);
+                preferencesHandler.put("notifTitleText", notifTitleText);
+                preferencesHandler.put("notifBodyText", notifBodyText);
+                preferencesHandler.put("notifSubText", notifSubText);
+                preferencesHandler.put("notifIconID", notifIconID);
+                preferencesHandler.put("notifColor", notifColor);
+                preferencesHandler.put("notifEnableSound", notifEnableSound);
+                preferencesHandler.put("notifEnableVibration", notifEnableVibration);
+                preferencesHandler.apply();
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                    context.startForegroundService(refreshForegroundServiceNotifContent);
+                    context.startForegroundService(serviceAction);
                 else
-                    context.startService(refreshForegroundServiceNotifContent);
+                    context.startService(serviceAction);
                 break;
 
             case IS_FOREGROUND_SERVICE_RUNNING:
@@ -151,14 +154,14 @@ public class FlutterForegroundServiceChannelHandler implements MethodChannel.Met
                 final long period = Long.parseLong(call.argument("taskPeriod") + "");
                 final long rawTaskHandler = Long.parseLong(call.argument("rawTaskHandler") + "");
 
-                Intent startTaskIntent = new Intent(context, FlutterForegroundService.class);
-                startTaskIntent.setAction(FlutterForegroundService.START_TASK);
-                startTaskIntent.putExtra("isTaskRunning", true);
-                startTaskIntent.putExtra("taskDelay", delay);
-                startTaskIntent.putExtra("taskPeriod", period);
-                startTaskIntent.putExtra("rawTaskHandler", rawTaskHandler);
+                serviceAction.setAction(FlutterForegroundService.START_TASK);
+                preferencesHandler.put("isTaskRunning", true);
+                preferencesHandler.put("taskDelay", delay);
+                preferencesHandler.put("taskPeriod", period);
+                preferencesHandler.put("rawTaskHandler", rawTaskHandler);
+                preferencesHandler.apply();
 
-                context.startService(startTaskIntent);
+                context.startService(serviceAction);
 
                 result.success(true);
                 break;
@@ -169,11 +172,11 @@ public class FlutterForegroundServiceChannelHandler implements MethodChannel.Met
                     break;
                 }
 
-                Intent stopTaskIntent = new Intent(context, FlutterForegroundService.class);
-                stopTaskIntent.setAction(FlutterForegroundService.STOP_TASK);
-                stopTaskIntent.putExtra("isTaskRunning", false);
+                serviceAction.setAction(FlutterForegroundService.STOP_TASK);
+                preferencesHandler.put("isTaskRunning", false);
+                preferencesHandler.apply();
 
-                context.startService(stopTaskIntent);
+                context.startService(serviceAction);
 
                 result.success(true);
                 break;

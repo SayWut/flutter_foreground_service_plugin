@@ -4,8 +4,14 @@
 
 This plugin lets you create a foreground service in Android.
 
+### Tested devices:
+- Android 8, OxygenOS 5.0.8
+- Android 8 (emulator)
+- Android 6 (emulator)
+
 __Caution:__<br>
-I have no idea what will happen if you try to run this plugin on IOS
+1. I have no idea what will happen if you try to run this plugin on IOS (I can't check this because I am not own any apple product its probably will crush your app)
+2. Some android operation systems have a strong battery optimization which sometimes kills foreground services, to handel this the plugin will automatically restart the service
 
 ## What can you control?
 

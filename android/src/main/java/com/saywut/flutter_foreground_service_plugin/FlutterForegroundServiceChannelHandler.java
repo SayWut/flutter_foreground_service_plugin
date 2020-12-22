@@ -150,6 +150,12 @@ public class FlutterForegroundServiceChannelHandler implements MethodChannel.Met
                     break;
                 }
 
+                if ((boolean) preferencesHandler.get("isTaskRunning"))
+                {
+                    FlutterForegroundServiceError.taskRunningError(result);
+                    break;
+                }
+
                 final long delay = Long.parseLong(call.argument("taskDelay") + "");
                 final long period = Long.parseLong(call.argument("taskPeriod") + "");
                 final long rawTaskHandler = Long.parseLong(call.argument("rawTaskHandler") + "");
@@ -169,6 +175,12 @@ public class FlutterForegroundServiceChannelHandler implements MethodChannel.Met
                 if (!isServiceRunning(FlutterForegroundService.class))
                 {
                     FlutterForegroundServiceError.serviceNotRunningError(result);
+                    break;
+                }
+
+                if (!(boolean) preferencesHandler.get("isTaskRunning"))
+                {
+                    FlutterForegroundServiceError.taskNotRunningError(result);
                     break;
                 }
 

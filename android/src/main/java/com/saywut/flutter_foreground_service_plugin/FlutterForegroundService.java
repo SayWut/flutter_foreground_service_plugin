@@ -68,7 +68,10 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
                     startForeground(1, buildNotification());
 
                 if ((boolean) preferencesHandler.get("isTaskRunning"))
-                    setFlutterEngine();
+                {
+                    createFlutterEngineAndBackgroundChannel();
+                    executeFlutterTaskCode();
+                }
 
                 return START_STICKY;
             case STOP_SERVICE:
@@ -82,7 +85,8 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
 
                 return START_STICKY;
             case START_TASK:
-                setFlutterEngine();
+                createFlutterEngineAndBackgroundChannel();
+                executeFlutterTaskCode();
 
                 return START_STICKY;
             case STOP_TASK:
@@ -195,24 +199,31 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
     }
 
     /**
-     * sets the flutter engine that used to communicate with the flutter code
+     * creates the flutter engine and backgeound channel that used to communicate with the flutter code
      * when the app is terminated
      */
-    public void setFlutterEngine()
+    public void createFlutterEngineAndBackgroundChannel()
     {
         engine = new FlutterEngine(this);
         FlutterMain.ensureInitializationComplete(this, null);
 
+        String pluginKey = "com.saywut.flutter_foreground_service_plugin.FlutterForegroundServicePlugin";
+        FlutterForegroundServicePlugin.registerWith(new ShimPluginRegistry(engine).registrarFor(pluginKey));
+
+        androidToFlutterChannel = new MethodChannel(engine.getDartExecutor(), BACKGROUND_CHANNEL_NAME);
+        androidToFlutterChannel.setMethodCallHandler(FlutterForegroundService.this);
+    }
+
+    /**
+     * Execute the flutter code of the periodic task function
+     */
+    public void executeFlutterTaskCode()
+    {
         long rawTaskHandler = (long) preferencesHandler.get("rawTaskHandler");
         FlutterCallbackInformation callbackInfo = FlutterCallbackInformation.lookupCallbackInformation(rawTaskHandler);
         String dartBundlePath = FlutterMain.findAppBundlePath();
 
-        String pluginKey = "com.saywut.flutter_foreground_service_plugin.FlutterForegroundServicePlugin";
-        FlutterForegroundServicePlugin.registerWith(new ShimPluginRegistry(engine).registrarFor(pluginKey));
         engine.getDartExecutor().executeDartCallback(new DartExecutor.DartCallback(getAssets(), dartBundlePath, callbackInfo));
-
-        androidToFlutterChannel = new MethodChannel(engine.getDartExecutor(), BACKGROUND_CHANNEL_NAME);
-        androidToFlutterChannel.setMethodCallHandler(FlutterForegroundService.this);
     }
 
     /**
@@ -249,7 +260,7 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
     }
 
     /**
-     * stops the periodic
+     * stops the periodic task
      */
     public void stopPeriodicTask()
     {
@@ -258,6 +269,13 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
             taskTimer.cancel();
             taskTimer.purge();
             taskTimer = null;
+        }
+
+        // destroying the engine to clear some of the used memory
+        if (engine != null)
+        {
+            engine.destroy();
+            engine = null;
         }
     }
 

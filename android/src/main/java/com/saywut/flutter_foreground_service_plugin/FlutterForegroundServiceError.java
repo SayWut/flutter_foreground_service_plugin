@@ -4,7 +4,7 @@ import io.flutter.plugin.common.MethodChannel;
 
 public class FlutterForegroundServiceError
 {
-    static void serviceRunningError(MethodChannel.Result result)
+    public static void serviceRunningError(MethodChannel.Result result)
     {
         String errorCode = "0";
         String errorMessage = "ServiceRunningError";
@@ -12,7 +12,7 @@ public class FlutterForegroundServiceError
         result.error(errorCode, errorMessage, errorDetails);
     }
 
-    static void serviceNotRunningError(MethodChannel.Result result)
+    public static void serviceNotRunningError(MethodChannel.Result result)
     {
         String errorCode = "1";
         String errorMessage = "ServiceNotRunningError";
@@ -20,11 +20,27 @@ public class FlutterForegroundServiceError
         result.error(errorCode, errorMessage, errorDetails);
     }
 
-    static void fileNotFoundError(MethodChannel.Result result, String fileName)
+    public static void fileNotFoundError(MethodChannel.Result result, String fileName)
     {
         String errorCode = "2";
         String errorMessage = "FileNotFoundError: " + fileName;
         String errorDetails = String.format("can't find the file %s, check if you did put it inside the drawable or mipmap res folders", fileName);
+        result.error(errorCode, errorMessage, errorDetails);
+    }
+
+    public static void taskRunningError(MethodChannel.Result result)
+    {
+        String errorCode = "3";
+        String errorMessage = "TaskRunningError";
+        String errorDetails = "the task is already running";
+        result.error(errorCode, errorMessage, errorDetails);
+    }
+
+    public static void taskNotRunningError(MethodChannel.Result result)
+    {
+        String errorCode = "4";
+        String errorMessage = "TaskNotRunningError";
+        String errorDetails = "the task isn't running";
         result.error(errorCode, errorMessage, errorDetails);
     }
 }

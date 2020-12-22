@@ -1,3 +1,8 @@
+## 0.1.5 (22.11.2020)
+
+### BUG FIX
+* Fixed memory overflow [`#1`](https://github.com/SayWut/flutter_foreground_service_plugin/issues/1)
+
 ## 0.1.4 (29.11.2020)
 
 ### BUG FIX

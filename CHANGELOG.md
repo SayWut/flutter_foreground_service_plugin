@@ -1,3 +1,12 @@
+## 0.1.6 (06.01.2021)
+
+### Added
+* Added start on boot option [`#2`](https://github.com/SayWut/flutter_foreground_service_plugin/issues/2)
+* Added new property to the `NotificationContent`, can now set the notification priority 
+
+### Changed
+* `RestartForegroundService` now named `ForegroundServiceReceiver` 
+
 ## 0.1.5 (22.11.2020)
 
 ### BUG FIX

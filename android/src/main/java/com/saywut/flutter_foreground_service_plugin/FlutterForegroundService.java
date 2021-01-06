@@ -29,8 +29,12 @@ import io.flutter.view.FlutterMain;
 
 public class FlutterForegroundService extends Service implements MethodChannel.MethodCallHandler
 {
+    // flutter background channel
     private static final String BACKGROUND_CHANNEL_NAME = "com.saywut.flutter_foreground_service_plugin/background_channel";
     private static final String BACKGROUND_CHANNEL_INITIALIZE = "backgroundChannelInitialize";
+
+    // service intent action
+    public static final String RESTART_FOREGROUND_SERVICE_ACTION = "RESTART_FOREGROUND_SERVICE_ACTION";
 
     // service commands
     public static final String START_SERVICE = "START_FOREGROUND_SERVICE";
@@ -39,6 +43,7 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
     public static final String START_TASK = "START_FOREGROUND_TASK";
     public static final String STOP_TASK = "STOP_FOREGROUND_TASK";
 
+    // service properties
     private String action = START_SERVICE;
     private SharedPreferencesHandler preferencesHandler;
     private Timer taskTimer;
@@ -67,7 +72,7 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
                 else
                     startForeground(1, buildNotification());
 
-                if ((boolean) preferencesHandler.get("isTaskRunning"))
+                if (preferencesHandler.get("isTaskRunning"))
                 {
                     createFlutterEngineAndBackgroundChannel();
                     executeFlutterTaskCode();
@@ -105,13 +110,13 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
     public void startForegroundOreo()
     {
         // gets the notification channel params
-        final boolean notifEnableSound = (boolean) preferencesHandler.get("notifEnableSound");
-        final boolean notifEnableVibration = (boolean) preferencesHandler.get("notifEnableVibration");
-        final String channelID = (String) preferencesHandler.get("channelID");
-        final String channelNameText = (String) preferencesHandler.get("channelNameText");
-        final String channelDescriptionText = (String) preferencesHandler.get("channelDescriptionText");
-        final int channelImportance = (int) preferencesHandler.get("channelImportance");
-        final int channelLockscreenVisibility = (int) preferencesHandler.get("channelLockscreenVisibility");
+        final boolean notifEnableSound = preferencesHandler.get("notifEnableSound");
+        final boolean notifEnableVibration = preferencesHandler.get("notifEnableVibration");
+        final String channelID = preferencesHandler.get("channelID");
+        final String channelNameText = preferencesHandler.get("channelNameText");
+        final String channelDescriptionText = preferencesHandler.get("channelDescriptionText");
+        final int channelImportance = preferencesHandler.get("channelImportance");
+        final int channelLockscreenVisibility = preferencesHandler.get("channelLockscreenVisibility");
 
         // creates a notification channel
         NotificationChannel notifChannel = new NotificationChannel(channelID, channelNameText, channelImportance);
@@ -145,20 +150,22 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
     public Notification buildNotification()
     {
         // gets the notification params
-        final String notifTitleText = (String) preferencesHandler.get("notifTitleText");
-        final String notifBodyText = (String) preferencesHandler.get("notifBodyText");
-        final String notifSubText = (String) preferencesHandler.get("notifSubText");
-        final int notifIconID = (int) preferencesHandler.get("notifIconID");
-        final int notifColor = (int) preferencesHandler.get("notifColor");
-        final boolean notifEnableSound = (boolean) preferencesHandler.get("notifEnableSound");
-        final boolean notifEnableVibration = (boolean) preferencesHandler.get("notifEnableVibration");
-        final String channelID = (String) preferencesHandler.get("channelID");
+        final String notifTitleText = preferencesHandler.get("notifTitleText");
+        final String notifBodyText = preferencesHandler.get("notifBodyText");
+        final String notifSubText = preferencesHandler.get("notifSubText");
+        final int notifIconID = preferencesHandler.get("notifIconID");
+        final int notifColor = preferencesHandler.get("notifColor");
+        final boolean notifEnableSound = preferencesHandler.get("notifEnableSound");
+        final boolean notifEnableVibration = preferencesHandler.get("notifEnableVibration");
+        final int notifPriority = preferencesHandler.get("notifPriority");
+        final String channelID = preferencesHandler.get("channelID");
 
         NotificationCompat.Builder notifBuild = new NotificationCompat.Builder(this, channelID)
                 .setContentTitle(notifTitleText)
                 .setSmallIcon(notifIconID)
                 .setContentIntent(mainActivityIntent)
                 .setCategory(Notification.CATEGORY_SERVICE)
+                .setPriority(notifPriority)
                 .setOngoing(true);
 
         if (!notifEnableSound)
@@ -199,7 +206,7 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
     }
 
     /**
-     * creates the flutter engine and backgeound channel that used to communicate with the flutter code
+     * creates the flutter engine and background channel that used to communicate with the flutter code
      * when the app is terminated
      */
     public void createFlutterEngineAndBackgroundChannel()
@@ -219,7 +226,7 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
      */
     public void executeFlutterTaskCode()
     {
-        long rawTaskHandler = (long) preferencesHandler.get("rawTaskHandler");
+        long rawTaskHandler = preferencesHandler.get("rawTaskHandler");
         FlutterCallbackInformation callbackInfo = FlutterCallbackInformation.lookupCallbackInformation(rawTaskHandler);
         String dartBundlePath = FlutterMain.findAppBundlePath();
 
@@ -289,7 +296,8 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
         // you can read farther explanation in the RestartForegroundService class
         if (!action.equals(STOP_SERVICE))
         {
-            Intent restartForegroundServiceReceiver = new Intent(this, RestartForegroundService.class);
+            Intent restartForegroundServiceReceiver = new Intent(this, ForegroundServiceReceiver.class);
+            restartForegroundServiceReceiver.setAction(RESTART_FOREGROUND_SERVICE_ACTION);
             sendBroadcast(restartForegroundServiceReceiver);
         }
 
@@ -302,8 +310,8 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
         switch (call.method)
         {
             case BACKGROUND_CHANNEL_INITIALIZE:
-                long taskDelay = (long) preferencesHandler.get("taskDelay");
-                long taskPeriod = (long) preferencesHandler.get("taskPeriod");
+                long taskDelay = preferencesHandler.get("taskDelay");
+                long taskPeriod = preferencesHandler.get("taskPeriod");
 
                 startPeriodicTask(taskDelay, taskPeriod);
                 result.success(true);

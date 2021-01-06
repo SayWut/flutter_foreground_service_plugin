@@ -19,7 +19,7 @@ public class FlutterForegroundServiceChannelHandler implements MethodChannel.Met
     private static final String START_PERIODIC_TASK = "startPeriodicTask";
     private static final String STOP_PERIODIC_TASK = "stopPeriodicTask";
 
-    private Context context;
+    private final Context context;
 
     public FlutterForegroundServiceChannelHandler(Context context)
     {
@@ -48,11 +48,13 @@ public class FlutterForegroundServiceChannelHandler implements MethodChannel.Met
                 int notifColor = call.argument("notifColor");
                 boolean notifEnableSound = call.argument("notifEnableSound");
                 boolean notifEnableVibration = call.argument("notifEnableVibration");
+                int notifPriority = call.argument("notifPriority");
                 String channelID = call.argument("channelID");
                 String channelNameText = call.argument("channelNameText");
                 String channelDescriptionText = call.argument("channelDescriptionText");
                 int channelImportance = call.argument("channelImportance");
                 int channelLockscreenVisibility = call.argument("channelLockscreenVisibility");
+                boolean isStartOnBoot = call.argument("isStartOnBoot");
 
                 int notifIconID = getResourceID(notifIconName);
                 if (notifIconID == 0)
@@ -70,12 +72,15 @@ public class FlutterForegroundServiceChannelHandler implements MethodChannel.Met
                 preferencesHandler.put("notifColor", notifColor);
                 preferencesHandler.put("notifEnableSound", notifEnableSound);
                 preferencesHandler.put("notifEnableVibration", notifEnableVibration);
+                preferencesHandler.put("notifPriority", notifPriority);
                 preferencesHandler.put("channelID", channelID);
                 preferencesHandler.put("channelNameText", channelNameText);
                 preferencesHandler.put("channelDescriptionText", channelDescriptionText);
                 preferencesHandler.put("channelImportance", channelImportance);
                 preferencesHandler.put("channelLockscreenVisibility", channelLockscreenVisibility);
+                preferencesHandler.put("isStartOnBoot", isStartOnBoot);
                 preferencesHandler.put("isTaskRunning", false);
+                preferencesHandler.put("isServiceShouldRun", true);
                 preferencesHandler.apply();
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
@@ -91,6 +96,9 @@ public class FlutterForegroundServiceChannelHandler implements MethodChannel.Met
                     FlutterForegroundServiceError.serviceNotRunningError(result);
                     break;
                 }
+
+                preferencesHandler.put("isServiceShouldRun", false);
+                preferencesHandler.apply();
 
                 serviceAction.setAction(FlutterForegroundService.STOP_SERVICE);
 
@@ -150,7 +158,7 @@ public class FlutterForegroundServiceChannelHandler implements MethodChannel.Met
                     break;
                 }
 
-                if ((boolean) preferencesHandler.get("isTaskRunning"))
+                if (preferencesHandler.get("isTaskRunning"))
                 {
                     FlutterForegroundServiceError.taskRunningError(result);
                     break;

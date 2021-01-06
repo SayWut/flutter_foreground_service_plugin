@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'notification_priority.dart';
+
 class NotificationContent {
   /// sets the title of the notification
   final String titleText;
@@ -27,6 +29,10 @@ class NotificationContent {
   /// if `null` the default color is used
   final Color color;
 
+  /// the notification priority
+  /// can't be `null`
+  final NotificationPriority priority;
+
   /// used for setting the notification content
   /// for further reading click [here](https://developer.android.com/reference/androidx/core/app/NotificationCompat.Builder)
   NotificationContent({
@@ -37,8 +43,8 @@ class NotificationContent {
     this.enableSound = false,
     this.enableVibration = false,
     this.color,
-  }) {
-    assert(titleText != null);
-    assert(iconName != null);
-  }
+    this.priority = NotificationPriority.defaultPr,
+  })  : assert(titleText != null),
+        assert(iconName != null),
+        assert(priority != null);
 }

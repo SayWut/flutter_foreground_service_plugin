@@ -32,12 +32,14 @@ class _MyAppState extends State<MyApp> {
                           iconName: 'ic_launcher',
                           titleText: 'Title Text',
                           color: Colors.red,
+                          priority: NotificationPriority.high,
                         ),
                         notificationChannelContent: NotificationChannelContent(
                           id: 'some_id',
                           nameText: 'settings title',
                           descriptionText: 'settings description text',
                         ),
+                        isStartOnBoot: true,
                       );
                     },
                   ),

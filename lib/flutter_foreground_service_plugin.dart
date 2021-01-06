@@ -1,4 +1,5 @@
 export 'content/notification/notificatioin_content.dart';
+export 'content/notification/notification_priority.dart';
 export 'content/notification_channel/notification_channel_content.dart';
 export 'content/notification_channel/notification_channel_importance.dart';
 export 'content/notification_channel/notification_channel_lockscreen_visibility.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'content/notification/notificatioin_content.dart';
+import 'content/notification/notification_priority.dart';
 import 'content/notification_channel/notification_channel_content.dart';
 import 'content/notification_channel/notification_channel_importance.dart';
 import 'content/notification_channel/notification_channel_lockscreen_visibility.dart';
@@ -40,6 +42,9 @@ class FlutterForegroundServicePlugin {
 
   /// Starts the foreground service with the passed [notificationContent] and [notificationChannelContent].
   ///
+  /// With the [isStartOnBoot] option you can start the service when the device is finish to boot.
+  /// the service will start only if the service was running before the device shutdown, if not the service will not start
+  ///
   /// Android limitation:
   ///
   /// `After you create a notification channel, you cannot change the notification
@@ -49,9 +54,11 @@ class FlutterForegroundServicePlugin {
   static Future<void> startForegroundService({
     @required NotificationContent notificationContent,
     @required NotificationChannelContent notificationChannelContent,
+    bool isStartOnBoot = false,
   }) async {
     assert(notificationContent != null);
     assert(notificationChannelContent != null);
+    assert(isStartOnBoot != null);
 
     int notifColorValue = notificationContent.color != null
         ? notificationContent.color.red << 16 |
@@ -67,12 +74,14 @@ class FlutterForegroundServicePlugin {
       'notifColor': notifColorValue ?? -1,
       'notifEnableSound': notificationContent.enableSound,
       'notifEnableVibration': notificationContent.enableVibration,
+      'notifPriority': notificationContent.priority.priority,
       'channelID': notificationChannelContent.id,
       'channelNameText': notificationChannelContent.nameText,
       'channelDescriptionText': notificationChannelContent.descriptionText,
       'channelImportance': notificationChannelContent.importance.importance,
       'channelLockscreenVisibility':
           notificationChannelContent.lockscreenVisibility.visibility,
+      'isStartOnBoot': isStartOnBoot,
     };
 
     await _foreground_channel.invokeMethod(_startService, args);

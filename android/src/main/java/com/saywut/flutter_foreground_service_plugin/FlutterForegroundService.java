@@ -50,6 +50,8 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
     private FlutterEngine engine;
     private MethodChannel androidToFlutterChannel;
     private PendingIntent mainActivityIntent;
+    private long lastTimeTaskExecute;
+    private long taskStartTime;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
@@ -245,6 +247,7 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
     {
         if (taskTimer == null)
         {
+            taskStartTime = System.currentTimeMillis();
             final Handler handler = new Handler(Looper.getMainLooper());
 
             taskTimer = new Timer();
@@ -258,6 +261,7 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
                         @Override
                         public void run()
                         {
+                            lastTimeTaskExecute = System.currentTimeMillis();
                             androidToFlutterChannel.invokeMethod("invokeFlutterFunction", null);
                         }
                     });
@@ -296,6 +300,27 @@ public class FlutterForegroundService extends Service implements MethodChannel.M
         // you can read farther explanation in the RestartForegroundService class
         if (!action.equals(STOP_SERVICE))
         {
+            if (taskTimer != null)
+            {
+                // if the task is running and the OS kills the service the task is stopped
+                // this is to calculate the task delay on restart to continue from where it stopped
+                long serviceStopTime = System.currentTimeMillis();
+                long taskDelay = preferencesHandler.get("taskDelay");
+                long taskPeriod = preferencesHandler.get("taskPeriod");
+
+                long passedTaskTimeFromStart = serviceStopTime - taskStartTime;
+                long passedTaskTimeFromDelay = taskDelay - passedTaskTimeFromStart;
+
+                long passedTaskTimeFromLast = serviceStopTime - lastTimeTaskExecute;
+                long passedTaskTimeFromPeriod = taskPeriod - passedTaskTimeFromLast;
+
+                long restartServiceTaskDelay = passedTaskTimeFromDelay >= 0 ? passedTaskTimeFromDelay : passedTaskTimeFromPeriod;
+                restartServiceTaskDelay = Math.max(restartServiceTaskDelay, 0);
+
+                preferencesHandler.put("taskDelay", restartServiceTaskDelay);
+                preferencesHandler.apply();
+            }
+
             Intent restartForegroundServiceReceiver = new Intent(this, ForegroundServiceReceiver.class);
             restartForegroundServiceReceiver.setAction(RESTART_FOREGROUND_SERVICE_ACTION);
             sendBroadcast(restartForegroundServiceReceiver);

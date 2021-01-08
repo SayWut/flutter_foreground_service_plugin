@@ -145,8 +145,9 @@ public class FlutterForegroundServiceChannelHandler implements MethodChannel.Met
                     context.startForegroundService(serviceAction);
                 else
                     context.startService(serviceAction);
-                break;
 
+                result.success(true);
+                break;
             case IS_FOREGROUND_SERVICE_RUNNING:
                 final boolean isRunning = isServiceRunning(FlutterForegroundService.class);
                 result.success(isRunning);

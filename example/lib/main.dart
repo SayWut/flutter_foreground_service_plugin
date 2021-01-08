@@ -68,7 +68,7 @@ class _MyAppState extends State<MyApp> {
                     onPressed: () async {
                       await FlutterForegroundServicePlugin.startPeriodicTask(
                         periodicTaskFun: periodicTaskFun,
-                        period: const Duration(seconds: 1),
+                        period: const Duration(minutes: 20),
                       );
                     },
                   ),
@@ -102,5 +102,7 @@ void periodicTaskFun() {
         color: Colors.red,
       ),
     );
+
+    print(DateTime.now());
   });
 }

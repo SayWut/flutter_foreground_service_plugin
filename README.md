@@ -31,6 +31,7 @@ __Caution:__<br>
     - lockscreen visibility
 3. Refresh the notification content
 4. Execute a task inside the service (runs even when the app is closed)
+5. Start service on boot automatically
 
 App example:
 

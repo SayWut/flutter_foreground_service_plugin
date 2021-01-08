@@ -1,3 +1,9 @@
+## 0.1.7 (08.01.2021)
+
+### BUG FIX
+* Fixed task delay to start after service restart [`#4`](https://github.com/SayWut/flutter_foreground_service_plugin/issues/4)
+* Fixed waiting to `refreshForegroundServiceContent` to finish execute
+
 ## 0.1.6 (06.01.2021)
 
 ### Added

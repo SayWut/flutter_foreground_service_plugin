@@ -25,22 +25,8 @@ class _MyAppState extends State<MyApp> {
                 children: [
                   TextButton(
                     child: Text('Start service'),
-                    onPressed: () async {
-                      await FlutterForegroundServicePlugin
-                          .startForegroundService(
-                        notificationContent: NotificationContent(
-                          iconName: 'ic_launcher',
-                          titleText: 'Title Text',
-                          color: Colors.red,
-                          priority: NotificationPriority.high,
-                        ),
-                        notificationChannelContent: NotificationChannelContent(
-                          id: 'some_id',
-                          nameText: 'settings title',
-                          descriptionText: 'settings description text',
-                        ),
-                        isStartOnBoot: true,
-                      );
+                    onPressed: () {
+                      startService();
                     },
                   ),
                   TextButton(
@@ -68,7 +54,7 @@ class _MyAppState extends State<MyApp> {
                     onPressed: () async {
                       await FlutterForegroundServicePlugin.startPeriodicTask(
                         periodicTaskFun: periodicTaskFun,
-                        period: const Duration(minutes: 20),
+                        period: const Duration(seconds: 1),
                       );
                     },
                   ),
@@ -86,6 +72,23 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
+}
+
+Future<void> startService() async {
+  await FlutterForegroundServicePlugin.startForegroundService(
+    notificationContent: NotificationContent(
+      iconName: 'ic_launcher',
+      titleText: 'Title Text',
+      color: Colors.red,
+      priority: NotificationPriority.high,
+    ),
+    notificationChannelContent: NotificationChannelContent(
+      id: 'some_id',
+      nameText: 'settings title',
+      descriptionText: 'settings description text',
+    ),
+    isStartOnBoot: true,
+  );
 }
 
 void periodicTaskFun() {

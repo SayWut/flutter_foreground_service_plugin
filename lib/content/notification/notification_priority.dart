@@ -7,7 +7,7 @@ enum NotificationPriority {
 }
 
 extension PriorityExtension on NotificationPriority {
-  int get priority {
+  int? get priority {
     switch (this) {
       case NotificationPriority.defaultPr:
         return 0;

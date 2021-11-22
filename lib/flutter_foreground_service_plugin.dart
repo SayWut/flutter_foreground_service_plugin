@@ -52,18 +52,18 @@ class FlutterForegroundServicePlugin {
   /// change a channel's name and description.`
   /// [Click here for further reading about the android notification channels](https://developer.android.com/training/notify-user/channels)
   static Future<void> startForegroundService({
-    @required NotificationContent notificationContent,
-    @required NotificationChannelContent notificationChannelContent,
+    required NotificationContent notificationContent,
+    required NotificationChannelContent notificationChannelContent,
     bool isStartOnBoot = false,
   }) async {
     assert(notificationContent != null);
     assert(notificationChannelContent != null);
     assert(isStartOnBoot != null);
 
-    int notifColorValue = notificationContent.color != null
-        ? notificationContent.color.red << 16 |
-            notificationContent.color.green << 8 |
-            notificationContent.color.blue
+    int? notifColorValue = notificationContent.color != null
+        ? notificationContent.color!.red << 16 |
+            notificationContent.color!.green << 8 |
+            notificationContent.color!.blue
         : null;
 
     Map<String, dynamic> args = {
@@ -94,14 +94,14 @@ class FlutterForegroundServicePlugin {
   }
 
   static Future<void> refreshForegroundServiceContent({
-    @required NotificationContent notificationContent,
+    required NotificationContent notificationContent,
   }) async {
     assert(notificationContent != null);
 
-    int notifColorValue = notificationContent.color != null
-        ? notificationContent.color.red << 16 |
-            notificationContent.color.green << 8 |
-            notificationContent.color.blue
+    int? notifColorValue = notificationContent.color != null
+        ? notificationContent.color!.red << 16 |
+            notificationContent.color!.green << 8 |
+            notificationContent.color!.blue
         : null;
 
     Map<String, dynamic> args = {
@@ -120,7 +120,7 @@ class FlutterForegroundServicePlugin {
 
   /// Checks wether the service is running or not
   /// if it is returns true, false otherwise
-  static Future<bool> isForegroundServiceRunning() async {
+  static Future<bool?> isForegroundServiceRunning() async {
     return await _foreground_channel.invokeMethod(_isServiceRunning);
   }
 
@@ -150,7 +150,7 @@ class FlutterForegroundServicePlugin {
   static Future<void> startPeriodicTask({
     Duration delay = const Duration(milliseconds: 0),
     Duration period = const Duration(milliseconds: 1),
-    @required void Function() periodicTaskFun,
+    required void Function() periodicTaskFun,
   }) async {
     assert(delay != null);
     assert(period != null);
@@ -159,7 +159,7 @@ class FlutterForegroundServicePlugin {
     assert(periodicTaskFun != null);
 
     var rawTaskHandler =
-        PluginUtilities.getCallbackHandle(periodicTaskFun).toRawHandle();
+        PluginUtilities.getCallbackHandle(periodicTaskFun)!.toRawHandle();
 
     Map<String, dynamic> args = {
       'taskDelay': delay.inMilliseconds,

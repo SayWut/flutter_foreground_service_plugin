@@ -9,7 +9,7 @@ enum NotificationChannelImportance {
 }
 
 extension ImportanceExtension on NotificationChannelImportance {
-  int get importance {
+  int? get importance {
     switch (this) {
       case NotificationChannelImportance.unspecified:
         return -1000;

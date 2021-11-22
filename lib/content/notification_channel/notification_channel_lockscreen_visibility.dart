@@ -6,7 +6,7 @@ enum NotificationChannelLockscreenVisibility {
 
 extension LockscreenVisibilityExtension
     on NotificationChannelLockscreenVisibility {
-  int get visibility {
+  int? get visibility {
     switch (this) {
       case NotificationChannelLockscreenVisibility.public:
         return 1;

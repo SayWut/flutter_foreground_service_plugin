@@ -7,10 +7,10 @@ class NotificationContent {
   final String titleText;
 
   /// sets the notification text body
-  final String bodyText;
+  final String? bodyText;
 
   /// sets the sub text of the notification
-  final String subText;
+  final String? subText;
 
   /// the notification icon name to use.
   ///
@@ -27,7 +27,7 @@ class NotificationContent {
 
   /// the notification color
   /// if `null` the default color is used
-  final Color color;
+  final Color? color;
 
   /// the notification priority
   /// can't be `null`
@@ -36,8 +36,8 @@ class NotificationContent {
   /// used for setting the notification content
   /// for further reading click [here](https://developer.android.com/reference/androidx/core/app/NotificationCompat.Builder)
   NotificationContent({
-    @required this.titleText,
-    @required this.iconName,
+    required this.titleText,
+    required this.iconName,
     this.bodyText,
     this.subText,
     this.enableSound = false,

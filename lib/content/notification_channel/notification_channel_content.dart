@@ -24,8 +24,8 @@ class NotificationChannelContent {
   /// used for setting the notification content
   /// for further reading click [here](https://developer.android.com/reference/android/app/NotificationChannel)
   NotificationChannelContent({
-    @required this.id,
-    @required this.nameText,
+    required this.id,
+    required this.nameText,
     this.descriptionText = "",
     this.importance = NotificationChannelImportance.defaultIm,
     this.lockscreenVisibility = NotificationChannelLockscreenVisibility.secret,

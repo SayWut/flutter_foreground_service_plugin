@@ -4,10 +4,35 @@ version: 0.1.7
 homepage: https://github.com/SayWut/flutter_foreground_service_plugin
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
   flutter: ">=1.20.0"
 
 dependencies:
+  # flutter:
+  #   sdk: flutter
+  async: ^2.8.1
+  boolean_selector: ^2.1.0
+  characters: ^1.1.0
+  charcode: ^1.3.1
+  clock: ^1.1.0
+  collection: any
+  fake_async: any
+  # flutter: any
+  # flutter_test: any
+  matcher: any
+  meta: any
+  path: any
+  # sky_engine: any
+  source_span: any
+  stack_trace: any
+  stream_channel: any
+  string_scanner: any
+  term_glyph: any
+  test_api: any
+  typed_data: any
+  vector_math: any
+  # flutter_foreground_service_plugin: any
+
   flutter:
     sdk: flutter
 
